@@ -34,3 +34,39 @@ There are no multi-line comment
 
 - `elixir <script_file>.exs` => run a script file
 - `elixirc <file>.ex` => compile a file to `Elixir.<File>.beam`
+
+## Basic Types
+
+- `1` => integer
+- `0x1F` => integer
+- `0b1010` => binary integer notation 10
+- `0o777` => octadecimal integer notation 511
+- `0x1F` => hexadecimal integer notation 31
+
+- `-1.0` => float
+- `5.7e-2` => float exponent notation 0.057
+
+- `:atom` => atom / symbol
+
+- `true` => boolean (atom)
+
+- `<<97::size(2)>>` => bit string
+- `<<97,98>>` => binay is a sub type of bit string (could be a string if all ASCII)
+- `"elixir"` => string (binary)
+
+- `[1, 2, 3]` => list (could be a char list if all ASCII)
+- `'elixir'` => char list (list)
+
+- `{1, 2, 3}` => tuple
+
+## Type Testing
+
+- `is_integer 1` => checks for integer
+- `is_float 4.6` => checks for float
+- `is_number 7.8` => checks for number
+- `is_atom :foo` => checks for atom
+- `is_boolean false` => checks for boolean
+- `is_bitstring <<97:2>>` => checks for bit string
+- `is_binary <<97, 98>>` => checks for binary
+- `is_function(fn a, b -> a + b end)` => checks for function
+- `is_function(fn a, b -> a + b end, 2)` => checks for function with arity
