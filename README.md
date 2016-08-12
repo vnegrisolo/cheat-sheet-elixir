@@ -175,3 +175,8 @@ Tuples are stored contiguously in memory.
 #### expensive Tuple functions:
 
 - `put_elem({:ok, "hello"}, 1, "world")`
+
+## Ranges
+
+- `1..10` => range definition
+- `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) # => 6` => range used in a reduce function to sum them up
