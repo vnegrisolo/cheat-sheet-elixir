@@ -99,3 +99,26 @@ Falsy in Elixir is `false` and `nil`, otherwise will be truthy.
 - `!` => truthy not operator
 
 It's possible to compare different data types. Here are the sorting order for data types: `number < atom < reference < functions < port < pid < tuple < list < bit string`.
+
+## Binaries
+
+- `<>` => concatenate strings
+- `byte_size(<<5, 6>>)` => byte size of a binary
+- `byte_size("foo")` => byte size of a string
+- `?x` => ASCII code for letter `x`
+
+## Strings
+
+String is a sub type of Binary. Strings are surrounded by double-quotes and are encoded in `UTF-8`. Strings are binary sequence of bytes.
+
+- `"hello #{:world}"` => string interpolation
+- `"\n"` => new line
+- `String.length("hello") # => 5` => get the length of a string
+- `String.upcase("hello") # => "HELLO"` => upcase a string
+- `"""` => multi-line string
+
+### Performance considerations for String:
+
+- `byte_size(<<97,98>>)` => byte_size on binaries are cheap
+- `byte_size("Hello")` => byte_size on strings are cheap
+- `String.length("Hello")` => length on String is expensive
