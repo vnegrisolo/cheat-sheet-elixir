@@ -70,3 +70,32 @@ There are no multi-line comment
 - `is_binary <<97, 98>>` => checks for binary
 - `is_function(fn a, b -> a + b end)` => checks for function
 - `is_function(fn a, b -> a + b end, 2)` => checks for function with arity
+
+## Number Operators
+
+- `10 / 2 => 5.0` => division always return a float
+- `div(10, 2) => 5` => integer division
+- `rem 10, 3 => 1` => integer remain of a division
+- `round(3.58) => 4` => float round
+- `trunc(3.58) => 3` => float trunc
+
+## Boolean Operators
+
+Falsy in Elixir is `false` and `nil`, otherwise will be truthy.
+
+- `==` => equals operator
+- `!=` => different operator
+- `===` => strict equal operator (integer with float)
+- `!==` => strict different operator (integer with float)
+- `<` => less operator
+- `<=` => less or equal operator
+- `>` => greater operator
+- `>=` => greater or equal operator
+- `and` => boolean and operator
+- `or` => boolean or operator
+- `not` => boolean not operator
+- `&&` => truthy and operator
+- `||` => truthy or operator
+- `!` => truthy not operator
+
+It's possible to compare different data types. Here are the sorting order for data types: `number < atom < reference < functions < port < pid < tuple < list < bit string`.
