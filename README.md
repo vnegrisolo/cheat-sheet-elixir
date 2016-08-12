@@ -201,3 +201,12 @@ tail #=> [2,3]
 
 first..last = 1..5
 ```
+
+## Anonymous Functions
+
+- `add = fn a, b -> a + b end` => function definition
+- `add.(1, 2)` => call a function
+
+## IO
+
+- `IO.puts "Foo"` => prints to stdout
