@@ -180,3 +180,24 @@ Tuples are stored contiguously in memory.
 
 - `1..10` => range definition
 - `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) # => 6` => range used in a reduce function to sum them up
+
+## Pattern Matching
+
+In Elixir `=` sign is not just an assign operator, but a **Pattern Matching** operator.
+
+This means that you assign variables from right side to the left based on patterns defined by the left one. If a pattern does not match a `MatchError` is raised.
+
+This powerful tool is also used to decompose complex objects like tuples, lists, etc into smaller ones:
+
+```elixir
+{a, b, c} = {1, 2} #=> ** (MatchError)
+{a, b} = {1, 2}
+a # => 1
+b # => 2
+
+[head | tail] = [1,2,3]
+head #=> 1
+tail #=> [2,3]
+
+first..last = 1..5
+```
