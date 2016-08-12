@@ -70,6 +70,13 @@ There are no multi-line comment
 - `is_binary <<97, 98>>` => checks for binary
 - `is_function(fn a, b -> a + b end)` => checks for function
 - `is_function(fn a, b -> a + b end, 2)` => checks for function with arity
+- `is_list/1`
+- `is_map/1`
+- `is_nil/1`
+- `is_pid/1`
+- `is_port/1`
+- `is_reference/1`
+- `is_tuple/1`
 
 ## Number Operators
 
@@ -182,6 +189,43 @@ Tuples are stored contiguously in memory.
 - `1..10` => range definition
 - `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) # => 6` => range used in a reduce function to sum them up
 
+## Conditional Flows (if/else/case/cond)
+
+### if / else
+
+```elixir
+if false do
+  "This will never be seen"
+else
+  "This will"
+end
+```
+
+### unless / else
+
+```elixir
+unless true do
+  "This will never be seen"
+else
+  "This will"
+end
+```
+
+### case / when
+
+```elixir
+case {1, 2, 3} do
+  {4, 5, 6} ->
+    "This won't match"
+  {1, x, 3} when x > 1 ->
+    "This will match and assign `:two` to `x`"
+  _ ->
+    "This will match any other value"
+end
+```
+
+Short-circuiting operators `&&`, `||` and `!` are **not** allowed in **when guards**.
+
 ## Pattern Matching
 
 In Elixir `=` sign is not just an assign operator, but a **Match Operator**.
@@ -234,6 +278,15 @@ You cannot make function calls on the left side of a match.
 
 - `add = fn a, b -> a + b end` => function definition
 - `add.(1, 2)` => call a function
+
+We can have multiple clauses and guards inside functions.
+
+```elixir
+calc = fn
+  x, y when x > 0 -> x + y
+  x, y -> x * y
+end
+```
 
 ## IO
 
