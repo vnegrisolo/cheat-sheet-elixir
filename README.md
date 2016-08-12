@@ -134,6 +134,7 @@ String is a sub type of Binary. Strings are surrounded by double-quotes and are 
 - `--` => subtraction operator
 - `hd([1, 5, 7])` => head of a list
 - `tl([1, 5, 7])` => tail of a list
+- `[97 | list]` => append to a list
 
 If a list contains just printable ASCII numbers Elixir will print it as a Char List.
 
@@ -183,24 +184,51 @@ Tuples are stored contiguously in memory.
 
 ## Pattern Matching
 
-In Elixir `=` sign is not just an assign operator, but a **Pattern Matching** operator.
+In Elixir `=` sign is not just an assign operator, but a **Match Operator**.
 
 This means that you assign variables from right side to the left based on patterns defined by the left one. If a pattern does not match a `MatchError` is raised.
 
 This powerful tool is also used to decompose complex objects like tuples, lists, etc into smaller ones:
 
 ```elixir
-{a, b, c} = {1, 2} #=> ** (MatchError)
+x = 1 # => assign 1 to x
+2 = x # => ** (MatchError)
+1 = x # => match and does not assign anything
+
+{a, b, c} = {1, 2} # => ** (MatchError)
 {a, b} = {1, 2}
 a # => 1
 b # => 2
 
 [head | tail] = [1,2,3]
-head #=> 1
-tail #=> [2,3]
+head # => 1
+tail # => [2,3]
 
 first..last = 1..5
 ```
+
+So in other words:
+
+- variables on the left side will be **assigned** with right side values
+- non variables on the left side will be used to **restrict a pattern to match**
+
+So **variables** and **non variables** behave differently with the match operator.
+
+### Pin Operator
+
+The Pin Operator `^` is used to treat variables the same way non variables with the match operator. In other words, the Pin Operator will evaluate the variable and use its value to **restrict a pattern**, preserving its original value.
+
+```elixir
+x = 1 # => assign 1 to x
+^x = 1 # => match x value with right side 1
+^x = 2 # => ** (MatchError)
+```
+
+### Match Operator Limitation
+
+You cannot make function calls on the left side of a match.
+
+- `length([1, [2], 3]) = 3 # => ** (CompileError) illegal pattern`
 
 ## Anonymous Functions
 
@@ -210,3 +238,7 @@ first..last = 1..5
 ## IO
 
 - `IO.puts "Foo"` => prints to stdout
+
+## Elixir Special Unbound Variable
+
+- `_` => unbound variable
