@@ -122,3 +122,28 @@ String is a sub type of Binary. Strings are surrounded by double-quotes and are 
 - `byte_size(<<97,98>>)` => byte_size on binaries are cheap
 - `byte_size("Hello")` => byte_size on strings are cheap
 - `String.length("Hello")` => length on String is expensive
+
+## Lists
+
+- `++` => concatenate operator
+- `--` => subtraction operator
+- `hd([1, 5, 7])` => head of a list
+- `tl([1, 5, 7])` => tail of a list
+
+If a list contains just printable ASCII numbers Elixir will print it as a Char List.
+
+## Character List
+
+A Char List is a sub type of List. A string surrounded by single-quote is actually a char list. Char list is a List.
+
+- `'ab'` => string representation of a char list
+- `[?a, ?b]` => `'ab'`
+- `[97, 98]` => `'ab'`
+
+### Performance considerations for Lists:
+
+Lists are linked elements, so every element points to the memory where is the next one.
+
+- `[0 | list]` => append an element is cheap
+- `length([1, 4])` => length on list is expensive
+- `length('Hello')` => length on char list is expensive
