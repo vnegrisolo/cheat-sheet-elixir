@@ -117,11 +117,16 @@ String is a sub type of Binary. Strings are surrounded by double-quotes and are 
 - `String.upcase("hello") # => "HELLO"` => upcase a string
 - `"""` => multi-line string
 
-### Performance considerations for String:
+## Performance considerations for Strings and Binaries:
 
-- `byte_size(<<97,98>>)` => byte_size on binaries are cheap
-- `byte_size("Hello")` => byte_size on strings are cheap
-- `String.length("Hello")` => length on String is expensive
+#### cheap Strings and Binaries functions:
+
+- `byte_size(<<97,98>>)`
+- `byte_size("Hello")`
+
+#### expensive Strings and Binaries functions:
+
+- `String.length("Hello")`
 
 ## Lists
 
@@ -140,10 +145,33 @@ A Char List is a sub type of List. A string surrounded by single-quote is actual
 - `[?a, ?b]` => `'ab'`
 - `[97, 98]` => `'ab'`
 
-### Performance considerations for Lists:
+### Performance considerations for Lists and Char Lists:
 
 Lists are linked elements, so every element points to the memory where is the next one.
 
-- `[0 | list]` => append an element is cheap
-- `length([1, 4])` => length on list is expensive
-- `length('Hello')` => length on char list is expensive
+#### cheap List functions:
+
+- `[0 | list]`
+
+#### expensive List functions:
+
+- `length([1, 4])`
+- `length('Hello')`
+
+## Tuples
+
+- `tuple_size({:ok, "hello"})` => tuple size
+- `elem({1, 2, 3}, 0)` => get tuple element by index
+
+### Performance considerations for Tuples:
+
+Tuples are stored contiguously in memory.
+
+#### cheap Tuple functions:
+
+- `elem({:ok, "hello"}, 1)`
+- `tuple_size({:ok, "hello"})`
+
+#### expensive Tuple functions:
+
+- `put_elem({:ok, "hello"}, 1, "world")`
