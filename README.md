@@ -289,6 +289,23 @@ Map holds a key value structure.
 
 #### expensive functions:
 
+## Nested data Structures
+
+- `put_in/2`
+- `update_in/2`
+- `get_and_update_in/2`
+
+```elixir
+users = [
+  john: %{name: "John", age: 27, languages: ["Erlang", "Ruby", "Elixir"]},
+  mary: %{name: "Mary", age: 29, languages: ["Elixir", "F#", "Clojure"]}
+]
+users[:john].age # => 27
+
+users = put_in users[:john].age, 31
+users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
+```
+
 ## Ranges
 
 - `1..10` => range definition
