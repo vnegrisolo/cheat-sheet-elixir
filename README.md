@@ -78,6 +78,11 @@ There are no multi-line comment
 - `is_reference/1`
 - `is_tuple/1`
 
+## Converting Types
+
+- `to_char_list("hełło")` => convert a string to char list
+- `to_string('hełło')` => convert a char list to string
+
 ## Number Operators
 
 - `10 / 2 => 5.0` => division always return a float
@@ -109,10 +114,10 @@ It's possible to compare different data types. Here are the sorting order for da
 
 ## Binaries
 
-- `<>` => concatenate strings
+- `<>` => concatenate binaries/strings
 - `byte_size(<<5, 6>>)` => byte size of a binary
 - `byte_size("foo")` => byte size of a string
-- `?x` => ASCII code for letter `x`
+- `?x` => ASCII code (code points) for letter `x`
 
 ## Strings
 
@@ -275,6 +280,12 @@ head # => 1
 tail # => [2,3]
 
 first..last = 1..5
+
+<<0, 1, x :: binary>> = <<0, 1, 2, 3>>
+x # => <<2, 3>>
+
+"he" <> rest = "hello"
+rest #=> "llo"
 ```
 
 So in other words:
