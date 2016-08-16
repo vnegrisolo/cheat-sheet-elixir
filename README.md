@@ -189,42 +189,68 @@ Tuples are stored contiguously in memory.
 - `1..10` => range definition
 - `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) # => 6` => range used in a reduce function to sum them up
 
+## Keyword List and do/end Block Syntax
+
+In Elixir you can use either **Keyword List** syntax or  **do/end Block** syntax:
+
+```elixir
+sky = :gray
+
+if sky == :blue do
+  :sunny
+else
+  :cloudy
+end
+
+if sky == :blue, do: :sunny, else: :cloudy
+
+if sky == :blue, do: (
+  :sunny
+), else: (
+  :cloudy
+)
+```
+
 ## Conditional Flows (if/else/case/cond)
 
 ### if / else
 
 ```elixir
-if false do
-  "This will never be seen"
-else
-  "This will"
-end
+sky = :gray
+if sky == :blue, do: :sunny, else: :cloudy
 ```
 
 ### unless / else
 
 ```elixir
-unless true do
-  "This will never be seen"
-else
-  "This will"
-end
+sky = :gray
+unless sky != :blue, do: :sunny, else: :cloudy
 ```
 
 ### case / when
 
 ```elixir
-case {1, 2, 3} do
-  {4, 5, 6} ->
-    "This won't match"
-  {1, x, 3} when x > 1 ->
-    "This will match and assign `:two` to `x`"
-  _ ->
-    "This will match any other value"
-end
+sky = {:gray, 75}
+case sky, do: (
+  {:blue, _}         -> :sunny
+  {_, t} when t > 80 -> :hot
+  _                  -> :check_wheather_channel
+)
 ```
 
-Short-circuiting operators `&&`, `||` and `!` are **not** allowed in **when guards**.
+On **when guards** short-circuiting operators `&&`, `||` and `!` are **not** allowed.
+
+### cond
+
+`cond` is equivalent as `if/else-if/else` statements.
+
+```elixir
+sky = :gray
+cond do: (
+  sky == :blue -> :sunny
+  true         -> :cloudy
+)
+```
 
 ## Pattern Matching
 
