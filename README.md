@@ -59,6 +59,9 @@ There are no multi-line comment
 
 - `{1, 2, 3}` => tuple
 
+- `[a: 5, b: 3]` => keyword list
+- `[{:a, 5}, {:b, 3}]` => keyword list is a list of tuples where the first element is a symbol
+
 ## Type Testing
 
 - `is_integer 1` => checks for integer
@@ -171,6 +174,35 @@ Lists are linked elements, so every element points to the memory where is the ne
 - `length([1, 4])`
 - `length('Hello')`
 
+## Keyword Lists
+
+Keyword list is a list of tuples where the first element is a symbol.
+
+- `[a: 5, b: 3]`
+- `[{:a, 5}, {:b, 3}]`
+
+You can add two lists with `++`.
+
+When fetching an element the first to match will return:
+
+```elixir
+list = [a: 5] ++ [a: 7]
+list # => [a: 5, a: 7]
+list[:a] # => 5
+```
+
+If a keyword list is the last argument of a function the square brackets `[` are optional.
+
+### Performance considerations for Keyword Lists:
+
+#### cheap Keyword List functions:
+
+- `[a: 5] ++ [b: 4]`
+
+#### expensive Keyword List functions:
+
+- `[a: 3, b: 6, c: 7][:c]`
+
 ## Tuples
 
 - `tuple_size({:ok, "hello"})` => tuple size
@@ -278,6 +310,8 @@ b # => 2
 [head | tail] = [1,2,3]
 head # => 1
 tail # => [2,3]
+
+[a: x] = [a: 5]
 
 first..last = 1..5
 
