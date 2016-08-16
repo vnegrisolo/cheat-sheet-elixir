@@ -51,19 +51,23 @@ There are no multi-line comment
 - `true` => boolean (atom)
 
 - `<<97::size(2)>>` => bit string
-- `<<97,98>>` => binay is a sub type of bit string (could be a string if all ASCII)
-- `"elixir"` => string (binary)
-
-- `[1, 2, 3]` => list (could be a char list if all ASCII)
-- `'elixir'` => char list (list)
+- `<<97,98>>` => binary
+- `"elixir"` => string
 
 - `{1, 2, 3}` => tuple
 
-- `[a: 5, b: 3]` => keyword list
-- `[{:a, 5}, {:b, 3}]` => keyword list is a list of tuples where the first element is a symbol
+- `[1, 2, 3]` => list
+- `'elixir'` => char list
+
+- `[a: 5, b: 3]` => keyword list short notation
+- `[{:a, 5}, {:b, 3}]` => keyword list long notation
+
+- `%{name: "Mary", age: 29}` => map short notation (keys must be atoms)
+- `%{:name => "Mary", :age => 29}` => map long notation
 
 ## Type Testing
 
+- `is_nil/1`
 - `is_integer 1` => checks for integer
 - `is_float 4.6` => checks for float
 - `is_number 7.8` => checks for number
@@ -71,20 +75,20 @@ There are no multi-line comment
 - `is_boolean false` => checks for boolean
 - `is_bitstring <<97:2>>` => checks for bit string
 - `is_binary <<97, 98>>` => checks for binary
-- `is_function(fn a, b -> a + b end)` => checks for function
-- `is_function(fn a, b -> a + b end, 2)` => checks for function with arity
 - `is_list/1`
+- `is_tuple/1`
 - `is_map/1`
-- `is_nil/1`
 - `is_pid/1`
 - `is_port/1`
 - `is_reference/1`
-- `is_tuple/1`
+- `is_function(fn a, b -> a + b end)` => checks for function
+- `is_function(fn a, b -> a + b end, 2)` => checks for function with arity
 
 ## Converting Types
 
 - `to_char_list("hełło")` => convert a string to char list
 - `to_string('hełło')` => convert a char list to string
+- `Map.to_list(%{:a => 1, 2 => :b})` => convert a map to list of tuples or keyword list
 
 ## Number Operators
 
@@ -98,128 +102,192 @@ There are no multi-line comment
 
 Falsy in Elixir is `false` and `nil`, otherwise will be truthy.
 
-- `==` => equals operator
-- `!=` => different operator
-- `===` => strict equal operator (integer with float)
-- `!==` => strict different operator (integer with float)
-- `<` => less operator
-- `<=` => less or equal operator
-- `>` => greater operator
-- `>=` => greater or equal operator
-- `and` => boolean and operator
-- `or` => boolean or operator
-- `not` => boolean not operator
-- `&&` => truthy and operator
-- `||` => truthy or operator
-- `!` => truthy not operator
+- `==` => equals
+- `!=` => different
+- `===` => strict equal (integer with float)
+- `!==` => strict different (integer with float)
+- `<` => less
+- `<=` => less or equal
+- `>` => greater
+- `>=` => greater or equal
+- `and` => boolean and
+- `or` => boolean or
+- `not` => boolean not
+- `&&` => truthy and
+- `||` => truthy or
+- `!` => truthy not
 
-It's possible to compare different data types. Here are the sorting order for data types: `number < atom < reference < functions < port < pid < tuple < list < bit string`.
+It's possible to compare different data types and that's the sorting order: `number < atom < reference < functions < port < pid < tuple < list < bit string`.
+
+## Bit Strings
+
+- `<<97::4>>` => short notation with 4 bits
+- `<<97::size(4)>>` => long notation with 4 bits
+- `byte_size(<<5::4>>)` => bit string byte size
+
+### Performance for Bit Strings:
+
+#### cheap functions:
+
+- `byte_size(<<97::4>>)`
+
+#### expensive functions:
 
 ## Binaries
 
+Binaries are 8 bits multiple Bit Strings. Binaries are 8 bits by default.
+
+- `<<97>>` => short notation with 8 bits
+- `<<97::size(8)>>` => long notation with 8 bits
 - `<>` => concatenate binaries/strings
-- `byte_size(<<5, 6>>)` => byte size of a binary
-- `byte_size("foo")` => byte size of a string
-- `?x` => ASCII code (code points) for letter `x`
+
+### Performance for Binaries:
+
+#### cheap functions:
+
+- `byte_size(<<97>>)`
+
+#### expensive functions:
 
 ## Strings
 
-String is a sub type of Binary. Strings are surrounded by double-quotes and are encoded in `UTF-8`. Strings are binary sequence of bytes.
+String is a Binary of code points where all elements are valid characters. Strings are surrounded by double-quotes and are encoded in `UTF-8` by default.
 
+- `"hello"` => string
+- `<<97, 98>>` => string "ab"
+- `<<?a, ?b>>` => string "ab"
+ `?x` => code points (ASCII code) for letter `x`
 - `"hello #{:world}"` => string interpolation
 - `"\n"` => new line
 - `String.length("hello") # => 5` => get the length of a string
 - `String.upcase("hello") # => "HELLO"` => upcase a string
-- `"""` => multi-line string
+- `"""` => multi-line string begin/end
 
-## Performance considerations for Strings and Binaries:
+### Performance for Strings:
 
-#### cheap Strings and Binaries functions:
+#### cheap functions:
 
-- `byte_size(<<97,98>>)`
-- `byte_size("Hello")`
+- `byte_size("hello")`
 
-#### expensive Strings and Binaries functions:
+#### expensive functions:
 
 - `String.length("Hello")`
 
+## Tuples
+
+Tuple is a list that is stored contiguously in memory.
+
+- `{:ok, "hello"}`
+- `tuple_size({:ok, "hello"})` => tuple size
+- `elem({:ok, "hello"}, 0)` => get tuple element by index
+- `put_elem({:ok, "hello"}, 1, "world")`
+
+### Performance for Tuples:
+
+#### cheap functions:
+
+- `tuple_size({:ok, "hello"})`
+- `elem({:ok, "hello"}, 1)`
+
+#### expensive functions:
+
+- `put_elem({:ok, "hello"}, 1, "world")`
+
 ## Lists
 
-- `++` => concatenate operator
-- `--` => subtraction operator
-- `hd([1, 5, 7])` => head of a list
-- `tl([1, 5, 7])` => tail of a list
-- `[97 | list]` => append to a list
+List is a linked list structure where each element points to the next one in memory. When subtraction just the first ocurrence will be removed.
 
-If a list contains just printable ASCII numbers Elixir will print it as a Char List.
+- `[:ok, "hello"]`
+- `[97 | [1, 6, 9]]` => prepend
+- `[1, 5] ++ [3, 9] # [1, 5, 3, 9]` => concatenation
+- `[1, 5] -- [9, 5] # [1]` => subtraction first occurrences
+- `hd([1, 5, 7])` => head
+- `tl([1, 5, 7])` => tail
 
-## Character List
+### Performance for Lists:
 
-A Char List is a sub type of List. A string surrounded by single-quote is actually a char list. Char list is a List.
+#### cheap functions:
 
-- `'ab'` => string representation of a char list
-- `[?a, ?b]` => `'ab'`
-- `[97, 98]` => `'ab'`
+- `[97 | [1, 6, 9]]` => prepend
+- `hd([1, 5, 7])` => head
+- `tl([1, 5, 7])` => tail
 
-### Performance considerations for Lists and Char Lists:
+#### expensive functions:
 
-Lists are linked elements, so every element points to the memory where is the next one.
-
-#### cheap List functions:
-
-- `[0 | list]`
-
-#### expensive List functions:
-
+- `[1, 5] ++ [3, 9] # [1, 5, 3, 9]` => concatenation
+- `[1, 5] -- [9, 5] # [1]` => subtraction first occurrences
 - `length([1, 4])`
+
+## Char List
+
+A Char List is a List of code points where all elements are valid characters. Char Lists are surrounded by single-quote and are usually used as arguments to some old Erlang code.
+
+- `'ab'` => char list
+- `[97, 98]` => `'ab'`
+- `[?a, ?b]` => `'ab'`
+- `?x` => code points (ASCII code) for letter `x`
+- `'hello' ++ 'world' # 'helloworld'` => concatenation
+- `'hello' -- 'world' # 'hel'` => subtraction first occurrences
+
+### Performance for Char Lists:
+
+#### cheap functions:
+
+- `[?H | 'ello']` => prepend
+
+#### expensive functions:
+
+- `'hello' ++ 'world' # 'helloworld'` => concatenation
+- `'hello' -- 'world' # 'hel'` => subtraction first occurrences
 - `length('Hello')`
 
 ## Keyword Lists
 
-Keyword list is a list of tuples where the first element is a symbol.
+Keyword list is a list of tuples where first elements are atoms. When fetching by key the first match will return. If a keyword list is the last argument of a function the square brackets `[` are optional.
 
-- `[a: 5, b: 3]`
-- `[{:a, 5}, {:b, 3}]`
+- `[a: 5, b: 3]` => keyword list short notation
+- `[{:a, 5}, {:b, 3}]` => keyword list long notation
+- `[{:a, 6} | [b: 7]] # [a: 6, b: 7]` => prepend
+- `[a: 5] ++ [a: 7] # [a: 5, a: 7]` => concatenation
+- `[a: 5, b: 7] -- [a: 5] # [b: 7]` => subtraction first ocurrences
+- `([a: 5, a: 7])[:a] # 5` => fetch by key
+- `length(a: 5, b: 7)` => optional squared brackets `[`
 
-You can add two lists with `++`.
+### Performance for Keyword Lists:
 
-When fetching an element the first to match will return:
+#### cheap functions:
 
-```elixir
-list = [a: 5] ++ [a: 7]
-list # => [a: 5, a: 7]
-list[:a] # => 5
-```
+- `[{:a, 6} | [b: 7]] # [a: 6, b: 7]` => prepend
 
-If a keyword list is the last argument of a function the square brackets `[` are optional.
+#### expensive functions:
 
-### Performance considerations for Keyword Lists:
+- `[a: 5] ++ [a: 7] # [a: 5, a: 7]` => concatenation
+- `[a: 5, b: 7] -- [a: 5] # [b: 7]` => subtraction first ocurrences
+- `([a: 5, a: 7])[:a] # 5` => fetch by key
+- `length(a: 5, b: 7)` => optional squared brackets `[`
 
-#### cheap Keyword List functions:
+## Maps
 
-- `[a: 5] ++ [b: 4]`
+Map holds a key value structure.
 
-#### expensive Keyword List functions:
+- `%{name: "Mary", age: 29}` => map short notation (keys must be atoms)
+- `%{:name => "Mary", :age => 29}` => map long notation
+- `%{name: "Mary", age: 29}[:name]` => fetch `:name` hash notation
+- `%{name: "Mary", age: 29}[:born]` => returns nil when do not find in the hash notation
+- `%{name: "Mary", age: 29}.name` => fetch `:name` short notation
+- `%{name: "Mary", age: 29}.born # ** (KeyError)` => blows an error when key does not exists
+- `%{%{name: "Mary", age: 29} | age: 31}` => update value for existing key
+- `%{%{name: "Mary", age: 29} | born: 1990} # ** (KeyError)` => blows an error when updating non existing key
 
-- `[a: 3, b: 6, c: 7][:c]`
+### Performance for Maps:
 
-## Tuples
+#### cheap functions:
 
-- `tuple_size({:ok, "hello"})` => tuple size
-- `elem({1, 2, 3}, 0)` => get tuple element by index
+- `%{name: "Mary", age: 29}[:name]` => fetch `:name`
+- `%{name: "Mary", age: 29}.name` => fetch `:name` short notation
+- `%{%{name: "Mary", age: 29} | age: 31}` => update value for existing key
 
-### Performance considerations for Tuples:
-
-Tuples are stored contiguously in memory.
-
-#### cheap Tuple functions:
-
-- `elem({:ok, "hello"}, 1)`
-- `tuple_size({:ok, "hello"})`
-
-#### expensive Tuple functions:
-
-- `put_elem({:ok, "hello"}, 1, "world")`
+#### expensive functions:
 
 ## Ranges
 
@@ -320,6 +388,12 @@ x # => <<2, 3>>
 
 "he" <> rest = "hello"
 rest #=> "llo"
+
+%{a: x} = %{b: 5, a: 7}
+x # => 7
+
+%{} = %{a: 5} # empty map matches any map
+%{c: x} = %{a: 5} # => ** (MatchError)
 ```
 
 So in other words:
