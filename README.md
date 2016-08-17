@@ -68,21 +68,22 @@ There are no multi-line comment
 ## Type Testing
 
 - `is_nil/1`
-- `is_integer 1` => checks for integer
-- `is_float 4.6` => checks for float
-- `is_number 7.8` => checks for number
-- `is_atom :foo` => checks for atom
-- `is_boolean false` => checks for boolean
-- `is_bitstring <<97:2>>` => checks for bit string
-- `is_binary <<97, 98>>` => checks for binary
+- `is_integer 1`
+- `is_float 4.6`
+- `is_number 7.8`
+- `is_atom :foo`
+- `is_boolean false`
+- `is_bitstring <<97:2>>`
+- `is_binary <<97, 98>>`
 - `is_list/1`
 - `is_tuple/1`
 - `is_map/1`
 - `is_pid/1`
 - `is_port/1`
 - `is_reference/1`
-- `is_function(fn a, b -> a + b end)` => checks for function
-- `is_function(fn a, b -> a + b end, 2)` => checks for function with arity
+- `is_function(fn a, b -> a + b end)` => function
+- `is_function(fn a, b -> a + b end, 2)` => function with arity
+- `Range.range?(1..3)`
 
 ## Converting Types
 
@@ -308,8 +309,10 @@ users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
 
 ## Ranges
 
-- `1..10` => range definition
+- `range = 1..10` => range definition
 - `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) # => 6` => range used in a reduce function to sum them up
+- `Enum.count(range) # => 10`
+- `Enum.member?(range, 11) # => false`
 
 ## Keyword List and do/end Block Syntax
 
@@ -387,30 +390,29 @@ x = 1 # => assign 1 to x
 2 = x # => ** (MatchError)
 1 = x # => match and does not assign anything
 
+<<0, 1, x>> = <<0, 1, 2, 3>> # => ** (MatchError)
+<<0, 1, x::binary>> = <<0, 1, 2, 3>>
+
+"world" <> x = "hello" # => ** (MatchError)
+"he" <> x = "hello"
+
 {a, b, c} = {1, 2} # => ** (MatchError)
 {a, b} = {1, 2}
-a # => 1
-b # => 2
 
-[head | tail] = [1,2,3]
-head # => 1
-tail # => [2,3]
+[a, 4] = [:b, 5] # => ** (MatchError)
+[a, 4] = [:b, 4]
 
+[head | tail] = [] # => ** (MatchError)
+[head | tail] = [1, 2, 3]
+
+[a: x] = [b: 9] # => ** (MatchError)
 [a: x] = [a: 5]
 
-first..last = 1..5
-
-<<0, 1, x :: binary>> = <<0, 1, 2, 3>>
-x # => <<2, 3>>
-
-"he" <> rest = "hello"
-rest #=> "llo"
-
-%{a: x} = %{b: 5, a: 7}
-x # => 7
-
+%{a: x} = %{b: 5} # => ** (MatchError)
 %{} = %{a: 5} # empty map matches any map
-%{c: x} = %{a: 5} # => ** (MatchError)
+%{a: x} = %{b: 5, a: 7}
+
+first..last = 1..5
 ```
 
 So in other words:
