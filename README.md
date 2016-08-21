@@ -205,6 +205,7 @@ List is a linked list structure where each element points to the next one in mem
 - `[1, 5] -- [9, 5] # [1]` => subtraction first occurrences
 - `hd([1, 5, 7])` => head
 - `tl([1, 5, 7])` => tail
+- `:foo in [:foo, :bar] #=> true` => in operator
 
 ### Performance for Lists:
 
@@ -219,6 +220,7 @@ List is a linked list structure where each element points to the next one in mem
 - `[1, 5] ++ [3, 9] # [1, 5, 3, 9]` => concatenation
 - `[1, 5] -- [9, 5] # [1]` => subtraction first occurrences
 - `length([1, 4])`
+- `:foo in [:foo, :bar] #=> true` => in operator
 
 ## Char List
 
@@ -230,6 +232,7 @@ A Char List is a List of code points where all elements are valid characters. Ch
 - `?x` => code points (ASCII code) for letter `x`
 - `'hello' ++ 'world' # 'helloworld'` => concatenation
 - `'hello' -- 'world' # 'hel'` => subtraction first occurrences
+- `?l in 'hello' #=> true` => in operator
 
 ### Performance for Char Lists:
 
@@ -242,6 +245,7 @@ A Char List is a List of code points where all elements are valid characters. Ch
 - `'hello' ++ 'world' # 'helloworld'` => concatenation
 - `'hello' -- 'world' # 'hel'` => subtraction first occurrences
 - `length('Hello')`
+- `?l in 'hello' #=> true` => in operator
 
 ## Keyword Lists
 
@@ -315,7 +319,7 @@ users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
 - `Enum.count(range) #=> 10`
 - `Enum.member?(range, 11) #=> false`
 
-## Keyword List and do/end Block Syntax
+## do/end Keyword List and Block Syntax
 
 In Elixir you can use either **Keyword List** syntax or  **do/end Block** syntax:
 
@@ -537,10 +541,11 @@ IO.puts Concat.join("Hello")               #=> Hello
 
 `&` could be used with a module function.
 
-When capturing you can use the function with its arity.
+When capturing you can use the function/operator with its arity.
 
 ```elixir
 &(&1 * &2).(3, 4) #=> 12
+(&*/2).(3, 4) #=> 12
 
 (&Kernel.is_atom(&1)).(:foo) #=> true
 (&Kernel.is_atom/1).(:foo) #=> true
