@@ -12,8 +12,14 @@ In Elixir a method is usually described with its arity (number of arguments), su
 
 ## File Types
 
-- `.exs` => Elixir script files
+- `.exs` => Elixir script file
 - `.ex` => Elixir regular file
+- `.beam` => Compiled Elixir file
+
+## Compile and Run Elixir code
+
+- `elixir <script_file>.exs` => run a script file
+- `elixirc <file>.ex` => compile a file to `Elixir.<File>.beam`
 
 ## Comments
 
@@ -29,11 +35,6 @@ There are no multi-line comment
 - `h <method/arity>` => see help for a method
 - `h <operator/arity>` => see help for a operator
 - `i <object>` => information about an object
-
-## Compile and Run Elixir code
-
-- `elixir <script_file>.exs` => run a script file
-- `elixirc <file>.ex` => compile a file to `Elixir.<File>.beam`
 
 ## Basic Types
 
@@ -111,12 +112,12 @@ Falsy in Elixir is `false` and `nil`, otherwise will be truthy.
 - `<=` => less or equal
 - `>` => greater
 - `>=` => greater or equal
-- `and` => boolean and
-- `or` => boolean or
-- `not` => boolean not
 - `&&` => truthy and
 - `||` => truthy or
 - `!` => truthy not
+- `and` => boolean and
+- `or` => boolean or
+- `not` => boolean not
 
 It's possible to compare different data types and that's the sorting order: `number < atom < reference < functions < port < pid < tuple < list < bit string`.
 
@@ -160,8 +161,8 @@ String is a Binary of code points where all elements are valid characters. Strin
  `?x` => code points (ASCII code) for letter `x`
 - `"hello #{:world}"` => string interpolation
 - `"\n"` => new line
-- `String.length("hello") # => 5` => get the length of a string
-- `String.upcase("hello") # => "HELLO"` => upcase a string
+- `String.length("hello") #=> 5` => get the length of a string
+- `String.upcase("hello") #=> "HELLO"` => upcase a string
 - `"""` => multi-line string begin/end
 
 ### Performance for Strings:
@@ -301,7 +302,7 @@ users = [
   john: %{name: "John", age: 27, languages: ["Erlang", "Ruby", "Elixir"]},
   mary: %{name: "Mary", age: 29, languages: ["Elixir", "F#", "Clojure"]}
 ]
-users[:john].age # => 27
+users[:john].age #=> 27
 
 users = put_in users[:john].age, 31
 users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
@@ -310,9 +311,9 @@ users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
 ## Ranges
 
 - `range = 1..10` => range definition
-- `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) # => 6` => range used in a reduce function to sum them up
-- `Enum.count(range) # => 10`
-- `Enum.member?(range, 11) # => false`
+- `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) #=> 6` => range used in a reduce function to sum them up
+- `Enum.count(range) #=> 10`
+- `Enum.member?(range, 11) #=> false`
 
 ## Keyword List and do/end Block Syntax
 
@@ -386,29 +387,29 @@ This means that you assign variables from right side to the left based on patter
 This powerful tool is also used to decompose complex objects like tuples, lists, etc into smaller ones:
 
 ```elixir
-x = 1 # => assign 1 to x
-2 = x # => ** (MatchError)
-1 = x # => match and does not assign anything
+x = 1 #=> assign 1 to x
+2 = x #=> ** (MatchError)
+1 = x #=> match and does not assign anything
 
-<<0, 1, x>> = <<0, 1, 2, 3>> # => ** (MatchError)
+<<0, 1, x>> = <<0, 1, 2, 3>> #=> ** (MatchError)
 <<0, 1, x::binary>> = <<0, 1, 2, 3>>
 
-"world" <> x = "hello" # => ** (MatchError)
+"world" <> x = "hello" #=> ** (MatchError)
 "he" <> x = "hello"
 
-{a, b, c} = {1, 2} # => ** (MatchError)
+{a, b, c} = {1, 2} #=> ** (MatchError)
 {a, b} = {1, 2}
 
-[a, 4] = [:b, 5] # => ** (MatchError)
+[a, 4] = [:b, 5] #=> ** (MatchError)
 [a, 4] = [:b, 4]
 
-[head | tail] = [] # => ** (MatchError)
+[head | tail] = [] #=> ** (MatchError)
 [head | tail] = [1, 2, 3]
 
-[a: x] = [b: 9] # => ** (MatchError)
+[a: x] = [b: 9] #=> ** (MatchError)
 [a: x] = [a: 5]
 
-%{a: x} = %{b: 5} # => ** (MatchError)
+%{a: x} = %{b: 5} #=> ** (MatchError)
 %{} = %{a: 5} # empty map matches any map
 %{a: x} = %{b: 5, a: 7}
 
@@ -417,8 +418,9 @@ first..last = 1..5
 
 So in other words:
 
-- variables on the left side will be **assigned** with right side values
 - non variables on the left side will be used to **restrict a pattern to match**
+- variables using the pin operator on the left side will have its value to be used to **restrict a pattern to match**
+- variables on the left side will be **assigned** with right side values
 
 So **variables** and **non variables** behave differently with the match operator.
 
@@ -427,21 +429,28 @@ So **variables** and **non variables** behave differently with the match operato
 The Pin Operator `^` is used to treat variables the same way non variables with the match operator. In other words, the Pin Operator will evaluate the variable and use its value to **restrict a pattern**, preserving its original value.
 
 ```elixir
-x = 1 # => assign 1 to x
-^x = 1 # => match x value with right side 1
-^x = 2 # => ** (MatchError)
+x = 1 #=> assign 1 to x
+^x = 1 #=> match x value with right side 1
+^x = 2 #=> ** (MatchError)
 ```
 
 ### Match Operator Limitation
 
 You cannot make function calls on the left side of a match.
 
-- `length([1, [2], 3]) = 3 # => ** (CompileError) illegal pattern`
+- `length([1, [2], 3]) = 3 #=> ** (CompileError) illegal pattern`
 
 ## Anonymous Functions
 
-- `add = fn a, b -> a + b end` => function definition
-- `add.(1, 2)` => call a function
+- `fn` => define functions
+- `->` => one line function definition
+- `.` => call a function
+- `when` => guards
+
+```elixir
+add = fn a, b -> a + b end
+add.(4, 5) #=> 9
+```
 
 We can have multiple clauses and guards inside functions.
 
@@ -450,11 +459,103 @@ calc = fn
   x, y when x > 0 -> x + y
   x, y -> x * y
 end
+calc.(-1, 6) #=> 5
+calc.(4, 5) #=> 45
+```
+
+## Modules And Named Functions
+
+- `defmodule` => define Modules
+- `def`  => define functions inside Modules
+- `defp`  => define private functions inside Modules
+- `when` => guards
+
+```eilxir
+defmodule Math do
+  def sum(a, b), do: a + b
+  def zero?(0), do: true
+  def zero?(x) when is_integer(x), do: false
+end
+
+Math.sum(1, 2) #=> 3
+```
+
+## Default Argument
+
+- `\\` => default argument
+
+```elixir
+defmodule Concat do
+  def join(a, b, sep \\ " ") do
+    a <> sep <> b
+  end
+end
+
+IO.puts Concat.join("Hello", "world")      #=> Hello world
+IO.puts Concat.join("Hello", "world", "_") #=> Hello_world
+```
+
+Default values are evaluated runtime.
+
+```elixir
+defmodule DefaultTest do
+  def dowork(x \\ IO.puts "hello") do
+    x
+  end
+end
+DefaultTest.dowork #=> :ok
+# hello
+DefaultTest.dowork 123 #=> 123
+DefaultTest.dowork #=> :ok
+# hello
+```
+
+Function with multiple clauses and a default value requires a function head:
+
+```elixir
+defmodule Concat do
+  def join(a, b \\ nil, sep \\ " ")
+
+  def join(a, b, _sep) when is_nil(b) do
+    a
+  end
+
+  def join(a, b, sep) do
+    a <> sep <> b
+  end
+end
+
+IO.puts Concat.join("Hello", "world")      #=> Hello world
+IO.puts Concat.join("Hello", "world", "_") #=> Hello_world
+IO.puts Concat.join("Hello")               #=> Hello
+```
+
+## Function Capturing
+
+- `&` => function capturing
+- `&1` => 1st argument
+
+`&` could be used with a module function.
+
+When capturing you can use the function with its arity.
+
+```elixir
+&(&1 * &2).(3, 4) #=> 12
+
+(&Kernel.is_atom(&1)).(:foo) #=> true
+(&Kernel.is_atom/1).(:foo) #=> true
+(&{:ok, [&1]}).(:foo) #=> {:ok, [:foo, :bar]}
+(&[&1, &2]).(:foo, :bar) #=> [:foo, :bar]
+(&[&1 | [&2]]).(:foo, :bar) #=> [:foo, :bar]
 ```
 
 ## IO
 
 - `IO.puts "Foo"` => prints to stdout
+
+## File
+
+- `File.read "my-file.md"` => reads a file
 
 ## Elixir Special Unbound Variable
 
