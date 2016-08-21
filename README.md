@@ -499,7 +499,7 @@ IO.puts Concat.join("Hello", "world")      #=> Hello world
 IO.puts Concat.join("Hello", "world", "_") #=> Hello_world
 ```
 
-Default values are evaluated runtime.
+Default values are **evaluated runtime**.
 
 ```elixir
 defmodule DefaultTest do
@@ -514,11 +514,11 @@ DefaultTest.dowork #=> :ok
 # hello
 ```
 
-Function with multiple clauses and a default value requires a function head:
+Function with multiple clauses and a default value requires a **function head** where default values are set:
 
 ```elixir
 defmodule Concat do
-  def join(a, b \\ nil, sep \\ " ")
+  def join(a, b \\ nil, sep \\ " ") # head function
 
   def join(a, b, _sep) when is_nil(b) do
     a
@@ -529,9 +529,9 @@ defmodule Concat do
   end
 end
 
+IO.puts Concat.join("Hello")               #=> Hello
 IO.puts Concat.join("Hello", "world")      #=> Hello world
 IO.puts Concat.join("Hello", "world", "_") #=> Hello_world
-IO.puts Concat.join("Hello")               #=> Hello
 ```
 
 ## Function Capturing
@@ -565,3 +565,22 @@ When capturing you can use the function/operator with its arity.
 ## Elixir Special Unbound Variable
 
 - `_` => unbound variable
+
+## Elixir memory inspection
+
+- `:c.memory` => inspect memory
+
+```elixir
+:c.memory
+# [
+#   total: 19262624,
+#   processes: 4932168,
+#   processes_used: 4931184,
+#   system: 14330456,
+#   atom: 256337,
+#   atom_used: 235038,
+#   binary: 43592,
+#   code: 5691514,
+#   ets: 358016
+# ]
+```
