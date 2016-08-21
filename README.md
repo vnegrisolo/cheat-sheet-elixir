@@ -384,6 +384,55 @@ cond do: (
 )
 ```
 
+## Recursion
+
+There is **no for loop** in Elixir, due to Elixir immutability. Instead you need to use **recursion**:
+
+```elixir
+defmodule Logger do
+  def log(msg, n) when n <= 0, do: ()
+  def log(msg, n) do
+    IO.puts msg
+    log(msg, n - 1)
+  end
+end
+Logger.log("Hello World!", 3)
+# Hello World!
+# Hello World!
+# Hello World!
+```
+
+In functional programming languages **map** and **reduce** are two major algorithm concepts. They can be implemented with **recursion** or using the `Enum` module.
+
+**reduce** will reduces the array into a single element:
+
+```elixir
+defmodule Math do
+  def sum_list(list, sum \\ 0)
+  def sum_list([], sum), do: sum
+  def sum_list([head | tail], sum) do
+    sum_list(tail, head + sum)
+  end
+end
+Math.sum_list([1, 2, 3]) #=> 6
+
+Enum.reduce([1, 2, 3], 0, &+/2) #=> 6
+```
+
+**map** modifies an existing array (new array with new modified values):
+
+```elixir
+defmodule Math do
+  def double([]), do: []
+  def double([head | tail]) do
+    [head * 2 | double(tail)]
+  end
+end
+Math.double([1, 2, 3]) #=> [2, 4, 6]
+
+Enum.map([1, 2, 3], &(&1 * 2)) #=> [2, 4, 6]
+```
+
 ## Pattern Matching
 
 In Elixir `=` sign is not just an assign operator, but a **Match Operator**.
@@ -415,8 +464,6 @@ x = 1 #=> assign 1 to x
 [] = [:a, 5] #=> ** (MatchError)
 [:a, :b] = [:b, :a] #=> ** (MatchError)
 [x, 4] = [:a, 4]
-[1] ++ [2] = [1, 2]
-[:a] ++ [:b] = [:a, :b] #=> ** (CompileError) ???
 
 [x | y] = [] #=> ** (MatchError)
 [x | y] = [1]
