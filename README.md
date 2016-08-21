@@ -284,6 +284,7 @@ Map holds a key value structure.
 - `%{name: "Mary", age: 29}.born # ** (KeyError)` => blows an error when key does not exists
 - `%{%{name: "Mary", age: 29} | age: 31}` => update value for existing key
 - `%{%{name: "Mary", age: 29} | born: 1990} # ** (KeyError)` => blows an error when updating non existing key
+- `map_size(%{name: "Mary"}) #=> 1` => map size
 
 ### Performance for Maps:
 
@@ -292,6 +293,7 @@ Map holds a key value structure.
 - `%{name: "Mary", age: 29}[:name]` => fetch `:name`
 - `%{name: "Mary", age: 29}.name` => fetch `:name` short notation
 - `%{%{name: "Mary", age: 29} | age: 31}` => update value for existing key
+- `map_size(%{name: "Mary"}) #=> 1` => map size
 
 #### expensive functions:
 
@@ -397,25 +399,35 @@ x = 1 #=> assign 1 to x
 
 <<0, 1, x>> = <<0, 1, 2, 3>> #=> ** (MatchError)
 <<0, 1, x::binary>> = <<0, 1, 2, 3>>
+<<0, 1>> <> <<x::binary>> = <<0, 1, 2, 3>>
+<<0, 1>> <> <<x, y>> = <<0, 1, 2, 3>>
+<<0, 1>> <> <<x>> <> <<y>> = <<0, 1, 2, 3>>
 
 "world" <> x = "hello" #=> ** (MatchError)
 "he" <> x = "hello"
 
-{a, b, c} = {1, 2} #=> ** (MatchError)
-{a, b} = {1, 2}
+{x, y, z} = {1, 2} #=> ** (MatchError)
+{} = {1, 2} #=> ** (MatchError)
+{:a, :b} = {:b, :a} #=> ** (MatchError)
+{x, y} = {1, 2}
 
-[a, 4] = [:b, 5] #=> ** (MatchError)
-[a, 4] = [:b, 4]
+[x, 4] = [:a, 5] #=> ** (MatchError)
+[] = [:a, 5] #=> ** (MatchError)
+[:a, :b] = [:b, :a] #=> ** (MatchError)
+[x, 4] = [:a, 4]
+[1] ++ [2] = [1, 2]
+[:a] ++ [:b] = [:a, :b] #=> ** (CompileError) ???
 
-[head | tail] = [] #=> ** (MatchError)
-[head | tail] = [1, 2, 3]
+[x | y] = [] #=> ** (MatchError)
+[x | y] = [1]
+[x | y] = [1, 2, 3]
 
 [a: x] = [b: 9] #=> ** (MatchError)
 [a: x] = [a: 5]
 
 %{a: x} = %{b: 5} #=> ** (MatchError)
 %{} = %{a: 5} # empty map matches any map
-%{a: x} = %{b: 5, a: 7}
+%{a: x, b: 5} = %{b: 5, a: 7, c: 9}
 
 first..last = 1..5
 ```
@@ -427,6 +439,16 @@ So in other words:
 - variables on the left side will be **assigned** with right side values
 
 So **variables** and **non variables** behave differently with the match operator.
+
+In order to assert an **empty map** you have to use a guard instead of pattern match, just like:
+
+```elixir
+(
+  fn m when map_size(m) == 0 ->
+    "empty map"
+  end
+).(%{}) #=> "empty map"
+```
 
 ### Pin Operator
 
