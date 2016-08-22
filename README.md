@@ -321,6 +321,20 @@ users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
 - `Enum.count(range) #=> 10`
 - `Enum.member?(range, 11) #=> false`
 
+## Pipe Operator
+
+- `|>` => pipe operator
+
+The return of a function will be passed as the first argument to the following.
+
+```elixir
+1..100 |>
+  Stream.map(&(&1 * 3)) |>
+  Stream.filter(&(rem(&1, 2) != 0)) |>
+  Enum.sum
+#=> 7500
+```
+
 ## do/end Keyword List and Block Syntax
 
 In Elixir you can use either **Keyword List** syntax or  **do/end Block** syntax:
@@ -433,16 +447,18 @@ Math.double([1, 2, 3]) #=> [2, 4, 6]
 Enum.map([1, 2, 3], &(&1 * 2)) #=> [2, 4, 6]
 ```
 
-## Pipe Operator
+## Enums and Streams
 
-- `|>` => pipe operator
+**Lists** and **Maps** are Enumerables.
+
+`Enum` module perform **eager** operations, meanwhile `Stream` module perform **lazy** operations.
 
 ```elixir
-1..100 |>
-  Stream.map(&(&1 * 3)) |>
-  Stream.filter(&(rem(&1, 2) != 0)) |>
-  Enum.sum
-#=> 7500
+# eager Enum
+1..100 |> Enum.map(&(&1 * 3)) |> Enum.sum #=> 15150
+
+# lazy Stream
+1..100 |> Stream.map(&(&1 * 3)) |> Enum.sum #=> 15150
 ```
 
 ## Pattern Matching
