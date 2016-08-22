@@ -27,6 +27,32 @@ In Elixir a method is usually described with its arity (number of arguments), su
 
 There are no multi-line comment
 
+## Code Documentation
+
+- `@moduledoc`
+- `@doc`
+
+```elixir
+defmodule Math do
+  @moduledoc """
+  Provides math-related functions.
+
+  ## Examples
+
+      iex> Math.sum(1, 2)
+      3
+  """
+
+  @doc """
+  Calculates the sum of two numbers.
+  """
+  def sum(a, b), do: a + b
+end
+
+h Math
+h Math.sum
+```
+
 ## Interactive Elixir
 
 - `iex` => open Interactive Elixir
