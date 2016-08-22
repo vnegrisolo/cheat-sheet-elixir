@@ -654,12 +654,34 @@ When capturing you can use the function/operator with its arity.
 
 ## IO
 
-- `IO.puts "Foo"` => prints to stdout
+- `IO.puts/1 "Hello"` => prints to stdout
+- `IO.puts :stderr, "Hello"` => prints to stderr
+- `IO.gets "yes/no: "` => reads an user input
+
+## StringIO
+
+- `{:ok, pid} = StringIO.open("my-file.md")` => open a file
+- `IO.read(pid, 2) #=> "he"` => read first 2 lines
 
 ## File
 
+- `{:ok, file} = File.open "hello", [:write]` => open file for reading
+- `IO.binwrite file, "world"` => write into file
+- `File.close file` => close file
 - `File.read "my-file.md"` => reads a file
 - `File.stream!("my-file.md") |> Enum.take(10)` => read the first 10 lines
+
+```elixir
+{:ok, file} = File.open "my-file.md", [:write]
+IO.binwrite file, "hello world"
+File.close file
+File.read "my-file.md" #=> {:ok, "hello world"}
+```
+
+## Path
+
+- `Path.join` => joins
+- `Path.expand("~/hello")` => expands to full path
 
 ## Elixir Special Unbound Variable
 
