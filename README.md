@@ -433,6 +433,18 @@ Math.double([1, 2, 3]) #=> [2, 4, 6]
 Enum.map([1, 2, 3], &(&1 * 2)) #=> [2, 4, 6]
 ```
 
+## Pipe Operator
+
+- `|>` => pipe operator
+
+```elixir
+1..100 |>
+  Stream.map(&(&1 * 3)) |>
+  Stream.filter(&(rem(&1, 2) != 0)) |>
+  Enum.sum
+#=> 7500
+```
+
 ## Pattern Matching
 
 In Elixir `=` sign is not just an assign operator, but a **Match Operator**.
