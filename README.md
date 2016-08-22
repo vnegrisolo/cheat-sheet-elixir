@@ -39,6 +39,7 @@ There are no multi-line comment
 ## Basic Types
 
 - `1` => integer
+- `1_000` => integers can use `_` to make it easy to read
 - `0x1F` => integer
 - `0b1010` => binary integer notation 10
 - `0o777` => octadecimal integer notation 511
@@ -658,6 +659,7 @@ When capturing you can use the function/operator with its arity.
 ## File
 
 - `File.read "my-file.md"` => reads a file
+- `File.stream!("my-file.md") |> Enum.take(10)` => read the first 10 lines
 
 ## Elixir Special Unbound Variable
 
@@ -665,6 +667,7 @@ When capturing you can use the function/operator with its arity.
 
 ## Elixir memory inspection
 
+- `:erlang.memory` => inspect memory
 - `:c.memory` => inspect memory
 
 ```elixir
@@ -680,4 +683,71 @@ When capturing you can use the function/operator with its arity.
 #   code: 5691514,
 #   ets: 358016
 # ]
+```
+
+## Processes, Tasks and Agents
+
+Process in Elixir has the same concept as threads in a lot of other languages, but extremely lightweight in terms of memory and CPU. They are isolated from each other and communicate via message passing.
+
+- `spawn/1` => fork a process
+- `self()` => current process
+- `Process.alive?(pid)` => check if process is still running
+- `send/2` => send message to another process
+- `receive/1` => receive message from another process
+- `after` => receive option to work with timeout
+- `flush()` => prints out all messages received
+- `spawn_link/1` => forks a process and link them, so failures are propagated
+- `Task.start/1` => starts a task
+- `Task.start_link/1` => starts a task and link it to the current process
+- `Process.register(pid, :foo)` => register a name for a process
+
+The idea is to have a supervisor that `spawn_link` new processes and when they fail the supervisor will restart them. This is the basics for **Fail Fast** and **Fault Tolerant** in Elixir.
+
+Tasks are used in supervision trees.
+
+```elixir
+parent = self()
+
+spawn_link(fn -> send(parent, {:hello, self()}) end)
+receive do: ({msg, pid} -> "#{inspect pid} => #{msg}"), after: (1_000 -> "nothing after 1s")
+
+Task.start_link(fn -> send(parent, {:hello, self()}) end)
+receive do: ({msg, pid} -> "#{inspect pid} => #{msg}"), after: (1_000 -> "nothing after 1s")
+
+flush()
+```
+
+**State** can be stored in processes or using its abstraction: `Agent`.
+
+Manual implementation of a storage using Elixir processes:
+
+```elixir
+defmodule KV do
+  def start_link do
+    Task.start_link(fn -> loop(%{}) end)
+  end
+
+  defp loop(map) do
+    receive do
+      {:get, key, caller} ->
+        send caller, Map.get(map, key)
+        loop(map)
+      {:put, key, value} ->
+        loop(Map.put(map, key, value))
+    end
+  end
+end
+{:ok, pid} = KV.start_link
+
+send pid, {:put, :hello, :world}
+send pid, {:get, :hello, self()}
+flush() #=> :world
+```
+
+Implementation of a storage using `Agent`:
+
+```elixir
+{:ok, pid} = Agent.start_link(fn -> %{} end)
+Agent.update(pid, fn map -> Map.put(map, :hello, :world) end)
+Agent.get(pid, fn map -> Map.get(map, :hello) end)
 ```
