@@ -597,16 +597,34 @@ calc.(4, 5) #=> 45
 - `def`  => define functions inside Modules
 - `defp`  => define private functions inside Modules
 - `when` => guards
+- `@` => module attributes
 
 ```eilxir
 defmodule Math do
-  def sum(a, b), do: a + b
-  def zero?(0), do: true
-  def zero?(x) when is_integer(x), do: false
+  def sum(a, b) when is_integer(a) and is_integer(b), do: a + b
 end
 
 Math.sum(1, 2) #=> 3
 ```
+
+Module attribute works as constants, evaluated at compilation time:
+
+```eilxir
+defmodule Math do
+  @foo :bar
+  def print, do: @foo
+end
+
+Math.print #=> :bar
+```
+
+Special Module attributes:
+
+- `@vsn`
+- `@moduledoc`
+- `@doc`
+- `@behaviour`
+- `@before_compile`
 
 ## Default Argument
 
