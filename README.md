@@ -773,3 +773,32 @@ Implementation of a storage using `Agent`:
 Agent.update(pid, fn map -> Map.put(map, :hello, :world) end)
 Agent.get(pid, fn map -> Map.get(map, :hello) end)
 ```
+
+## alias, require, import and use
+
+In order to facilitate code reuse Elixir has: `alias`, `require`, `import` (directives) and `use` (macro).
+
+- `alias Foo.Bar, as: Bar` => alias module, so Bar can be called instead of Foo.Bar
+- `alias Foo.Bar` => `as` is optional on alias
+- `require Foo` => ensure the module is compiled and available (usually for macros)
+- `import Foo` => requires and import functions from Foo so they can be called without the `Foo.` prefix
+- `import List, only: [duplicate: 2]` => only option
+- `import List, expect: [duplicate: 2]` => except option
+- `import List, only: :macros` => import only macros
+- `import List, only: :functions` => import only functions
+- `use Foo` => invokes the custom code defined in Foo as an extension point
+- `alias MyApp.{Foo, Bar, Baz}` => multiple alias
+- `require MyApp.{Foo, Bar, Baz}` => multiple require
+- `import MyApp.{Foo, Bar, Baz}` => multiple import
+
+All modules are defines inside `Elixir` namespace but it can be omitted for convenience.
+
+`alias`, `require` and `import` are lexically scoped, which means that it will be valid just inside the scope it was defined. This is **not a global scope**.
+
+`require` is usually used to require Elixir macro code:
+
+```elixir
+Integer.is_odd(3) #=> ** (CompileError): you must require Integer before invoking the macro Integer.is_odd/1
+require Integer
+Integer.is_odd(3) #=> true
+```
