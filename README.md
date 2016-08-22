@@ -148,6 +148,20 @@ Falsy in Elixir is `false` and `nil`, otherwise will be truthy.
 
 It's possible to compare different data types and that's the sorting order: `number < atom < reference < functions < port < pid < tuple < list < bit string`.
 
+## Pipe Operator
+
+- `|>` => pipe operator
+
+The return of a function will be passed as the first argument to the following.
+
+```elixir
+1..100 |>
+  Stream.map(&(&1 * 3)) |>
+  Stream.filter(&(rem(&1, 2) != 0)) |>
+  Enum.sum
+#=> 7500
+```
+
 ## Bit Strings
 
 - `<<97::4>>` => short notation with 4 bits
@@ -221,6 +235,13 @@ Tuple is a list that is stored contiguously in memory.
 #### expensive functions:
 
 - `put_elem({:ok, "hello"}, 1, "world")`
+
+## Ranges
+
+- `range = 1..10` => range definition
+- `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) #=> 6` => range used in a reduce function to sum them up
+- `Enum.count(range) #=> 10`
+- `Enum.member?(range, 11) #=> false`
 
 ## Lists
 
@@ -324,6 +345,28 @@ Map holds a key value structure.
 
 #### expensive functions:
 
+## Structs
+
+Structs are built in top of Map.
+
+- `defstruct` => define a struct
+
+```elixir
+defmodule User do
+  defstruct name: "John", age: 27
+end
+john = %User{} #=> %User{age: 27, name: "John"}
+mary = %User{name: "Mary", age: 25} #=> %User{age: 25, name: "Mary"}
+meg = %{john | name: "Meg"} #=> %User{age: 27, name: "Meg"}
+bill = Map.merge(john, %User{name: "Bill", age: 23})
+
+john.name #=> John
+john[:name] #=> ** (UndefinedFunctionError) undefined function: User.fetch/2
+is_map john #=> true
+john.__struct__ #=> User
+Map.keys(john) #=> [:__struct__, :age, :name]
+```
+
 ## Nested data Structures
 
 - `put_in/2`
@@ -339,27 +382,6 @@ users[:john].age #=> 27
 
 users = put_in users[:john].age, 31
 users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
-```
-
-## Ranges
-
-- `range = 1..10` => range definition
-- `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) #=> 6` => range used in a reduce function to sum them up
-- `Enum.count(range) #=> 10`
-- `Enum.member?(range, 11) #=> false`
-
-## Pipe Operator
-
-- `|>` => pipe operator
-
-The return of a function will be passed as the first argument to the following.
-
-```elixir
-1..100 |>
-  Stream.map(&(&1 * 3)) |>
-  Stream.filter(&(rem(&1, 2) != 0)) |>
-  Enum.sum
-#=> 7500
 ```
 
 ## do/end Keyword List and Block Syntax
@@ -515,6 +537,8 @@ x = 1 #=> assign 1 to x
 {:a, :b} = {:b, :a} #=> ** (MatchError)
 {x, y} = {1, 2}
 
+first..last = 1..5
+
 [x, 4] = [:a, 5] #=> ** (MatchError)
 [] = [:a, 5] #=> ** (MatchError)
 [:a, :b] = [:b, :a] #=> ** (MatchError)
@@ -531,7 +555,12 @@ x = 1 #=> assign 1 to x
 %{} = %{a: 5} # empty map matches any map
 %{a: x, b: 5} = %{b: 5, a: 7, c: 9}
 
-first..last = 1..5
+defmodule User do
+  defstruct name: "John", age: 27
+end
+john = %User{age: 29}
+%User{name: name} = john
+name #=> "John"
 ```
 
 So in other words:
@@ -731,26 +760,6 @@ File.read "my-file.md" #=> {:ok, "hello world"}
 
 - `_` => unbound variable
 
-## Elixir memory inspection
-
-- `:erlang.memory` => inspect memory
-- `:c.memory` => inspect memory
-
-```elixir
-:c.memory
-# [
-#   total: 19262624,
-#   processes: 4932168,
-#   processes_used: 4931184,
-#   system: 14330456,
-#   atom: 256337,
-#   atom_used: 235038,
-#   binary: 43592,
-#   code: 5691514,
-#   ets: 358016
-# ]
-```
-
 ## Processes, Tasks and Agents
 
 Process in Elixir has the same concept as threads in a lot of other languages, but extremely lightweight in terms of memory and CPU. They are isolated from each other and communicate via message passing.
@@ -845,4 +854,24 @@ All modules are defines inside `Elixir` namespace but it can be omitted for conv
 Integer.is_odd(3) #=> ** (CompileError): you must require Integer before invoking the macro Integer.is_odd/1
 require Integer
 Integer.is_odd(3) #=> true
+```
+
+## Elixir memory inspection
+
+- `:erlang.memory` => inspect memory
+- `:c.memory` => inspect memory
+
+```elixir
+:c.memory
+# [
+#   total: 19262624,
+#   processes: 4932168,
+#   processes_used: 4931184,
+#   system: 14330456,
+#   atom: 256337,
+#   atom_used: 235038,
+#   binary: 43592,
+#   code: 5691514,
+#   ets: 358016
+# ]
 ```
