@@ -62,8 +62,9 @@ h Math.sum
 
 - `_` => unbound variable
 
-## Elixir memory inspection
+## Elixir/Erlang Virtual Machine inspection
 
+- `:observer.start` => start a gui tool for inspection
 - `:erlang.memory` => inspect memory
 - `:c.memory` => inspect memory
 
@@ -772,7 +773,7 @@ for {:good, n} <- values, do: n * n
 
 Generators use `->` and they have on the right an `Enumerable` and on the left a **pattern matchable** element variable.
 
-You can have **filters** to filter each element:
+You can have **filters** to filter **truthy** elements:
 
 ```elixir
 for dir  <- [".", "/"],
@@ -1046,4 +1047,40 @@ All modules are defines inside `Elixir` namespace but it can be omitted for conv
 Integer.is_odd(3) #=> ** (CompileError): you must require Integer before invoking the macro Integer.is_odd/1
 require Integer
 Integer.is_odd(3) #=> true
+```
+
+`use` call `__using__` when the module is being used:
+
+```elixir
+defmodule Fruit do
+  defmacro __using__(option: option) do
+    IO.puts "options=#{inspect option}"
+    quote do: IO.puts "Using Fruit module"
+  end
+end
+
+defmodule Meal do
+  use Fruit, option: :hello
+end
+#=> "Good to see you've added Fruit to your meal"
+```
+
+## Meta Programming
+
+- `quote` => shows AST (Abstract Syntax Tree)
+
+```elixir
+quote do: 2 * 2 == 4
+#=> {
+#=>   :==,
+#=>   [context: Elixir, import: Kernel],
+#=>   [
+#=>     {
+#=>       :*,
+#=>       [context: Elixir, import: Kernel],
+#=>       [2, 2]
+#=>     },
+#=>     4
+#=>   ]
+#=> }
 ```
