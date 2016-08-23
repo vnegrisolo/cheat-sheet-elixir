@@ -413,6 +413,13 @@ List is a linked list structure where each element points to the next one in mem
 - `hd([1, 5, 7])` => head
 - `tl([1, 5, 7])` => tail
 - `:foo in [:foo, :bar] #=> true` => in operator
+- `~w` => generates a list from words
+
+```elixir
+~w(one two three) #=> ["one", "two", "three"]
+~w(one two three)c #=> ['one', 'two', 'three']
+~w(one two three)a #=> [:one, :two, :three]
+```
 
 ### Performance for Lists:
 
@@ -824,6 +831,7 @@ calc.(4, 5) #=> 45
 - `defp`  => define private functions inside Modules
 - `when` => guards
 - `@` => module attributes
+- `__info__(:functions)` => list functions inside a module
 
 ```eilxir
 defmodule Math do
@@ -831,6 +839,8 @@ defmodule Math do
 end
 
 Math.sum(1, 2) #=> 3
+
+Math.__info__(:functions) #=> [sum: 2]
 ```
 
 Module attribute works as constants, evaluated at compilation time:
