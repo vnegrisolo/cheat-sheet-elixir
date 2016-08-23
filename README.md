@@ -1,5 +1,10 @@
 # Elixir Cheat Sheet
 
+```elixir
+elixir -v
+1.3.1
+```
+
 Elixir is a dynamic functional compiled language that runs over an Erlang Virtual Machine called BEAM.
 
 Erlang and its BEAM is well known for running low-lattency, distributed and fault-tolerant applications.
@@ -53,6 +58,30 @@ h Math
 h Math.sum
 ```
 
+## Elixir Special Unbound Variable
+
+- `_` => unbound variable
+
+## Elixir memory inspection
+
+- `:erlang.memory` => inspect memory
+- `:c.memory` => inspect memory
+
+```elixir
+:c.memory
+# [
+#   total: 19262624,
+#   processes: 4932168,
+#   processes_used: 4931184,
+#   system: 14330456,
+#   atom: 256337,
+#   atom_used: 235038,
+#   binary: 43592,
+#   code: 5691514,
+#   ets: 358016
+# ]
+```
+
 ## Interactive Elixir
 
 - `iex` => open Interactive Elixir
@@ -64,6 +93,8 @@ h Math.sum
 
 ## Basic Types
 
+### Integer
+
 - `1` => integer
 - `1_000` => integers can use `_` to make it easy to read
 - `0x1F` => integer
@@ -71,18 +102,28 @@ h Math.sum
 - `0o777` => octadecimal integer notation 511
 - `0x1F` => hexadecimal integer notation 31
 
+### Float
+
 - `-1.0` => float
 - `5.7e-2` => float exponent notation 0.057
+
+### Atom
 
 - `:atom` => atom / symbol
 
 - `true` => boolean (atom)
 
+### BitString
+
 - `<<97::size(2)>>` => bit string
 - `<<97,98>>` => binary
 - `"elixir"` => string
 
+### Tuple
+
 - `{1, 2, 3}` => tuple
+
+### List
 
 - `[1, 2, 3]` => list
 - `'elixir'` => char list
@@ -90,8 +131,26 @@ h Math.sum
 - `[a: 5, b: 3]` => keyword list short notation
 - `[{:a, 5}, {:b, 3}]` => keyword list long notation
 
+### Map
+
 - `%{name: "Mary", age: 29}` => map short notation (keys must be atoms)
 - `%{:name => "Mary", :age => 29}` => map long notation
+
+### PID
+
+- `self() #=> #PID<0.80.0>` => current Process id
+
+### Function
+
+- `fn -> :hello end` => anonymous function
+
+### Reference
+
+- `make_ref() #=> #Reference<0.0.8.133>` => create a new reference
+
+### Port
+
+- `hd Port.list() #=> #Port<0.0>` => get first port
 
 ## Type Testing
 
@@ -106,11 +165,11 @@ h Math.sum
 - `is_list/1`
 - `is_tuple/1`
 - `is_map/1`
-- `is_pid/1`
-- `is_port/1`
-- `is_reference/1`
+- `is_pid self()`
 - `is_function(fn a, b -> a + b end)` => function
 - `is_function(fn a, b -> a + b end, 2)` => function with arity
+- `is_port hd Port.list()`
+- `is_reference make_ref()`
 - `Range.range?(1..3)`
 
 ## Converting Types
@@ -366,6 +425,67 @@ is_map john #=> true
 john.__struct__ #=> User
 Map.keys(john) #=> [:__struct__, :age, :name]
 ```
+
+## Protocols
+
+- `defprotocol Foo` => define protocol `Foo`
+- `defimpl Foo, for Integer` => implement that protocol for `Integer`
+
+Here are all native data types that you can use: `Atom`, `BitString`, `Float`, `Function`, `Integer`, `List`, `Map`, `PID`, `Port`, `Reference`, `Tuple`.
+
+```elixir
+defprotocol Blank do
+  @doc "Returns true if data is considered blank/empty"
+  def blank?(data)
+end
+
+defimpl Blank, for: Integer do
+  def blank?(_), do: false
+end
+
+defimpl Blank, for: List do
+  def blank?([]), do: true
+  def blank?(_),  do: false
+end
+
+defimpl Blank, for: Map do
+  def blank?(map), do: map_size(map) == 0
+end
+
+defimpl Blank, for: Atom do
+  def blank?(false), do: true
+  def blank?(nil),   do: true
+  def blank?(_),     do: false
+end
+
+Blank.blank?(0) #=> false
+Blank.blank?([]) #=> true
+Blank.blank?([1, 2, 3]) #=> false
+Blank.blank?("hello") #=> ** (Protocol.UndefinedError)
+```
+
+`Structs` do not share `Protocol` implementations with `Map`.
+
+```elixir
+defimpl Blank, for: User do
+  def blank?(_), do: false
+end
+```
+
+You can also implement a `Protocol` for `Any`. And in this case you can derive any `Struct`.
+
+```elixir
+defimpl Blank, for: Any do
+  def blank?(_), do: false
+end
+
+defmodule DeriveUser do
+  @derive Blank
+  defstruct name: "john", age: 27
+end
+```
+
+Elixir built-in most common used protocols: `Enumerable`, `String.Chars`, `Inspect`.
 
 ## Nested data Structures
 
@@ -756,10 +876,6 @@ File.read "my-file.md" #=> {:ok, "hello world"}
 - `Path.join` => joins
 - `Path.expand("~/hello")` => expands to full path
 
-## Elixir Special Unbound Variable
-
-- `_` => unbound variable
-
 ## Processes, Tasks and Agents
 
 Process in Elixir has the same concept as threads in a lot of other languages, but extremely lightweight in terms of memory and CPU. They are isolated from each other and communicate via message passing.
@@ -854,24 +970,4 @@ All modules are defines inside `Elixir` namespace but it can be omitted for conv
 Integer.is_odd(3) #=> ** (CompileError): you must require Integer before invoking the macro Integer.is_odd/1
 require Integer
 Integer.is_odd(3) #=> true
-```
-
-## Elixir memory inspection
-
-- `:erlang.memory` => inspect memory
-- `:c.memory` => inspect memory
-
-```elixir
-:c.memory
-# [
-#   total: 19262624,
-#   processes: 4932168,
-#   processes_used: 4931184,
-#   system: 14330456,
-#   atom: 256337,
-#   atom_used: 235038,
-#   binary: 43592,
-#   code: 5691514,
-#   ets: 358016
-# ]
 ```
