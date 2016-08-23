@@ -221,6 +221,22 @@ The return of a function will be passed as the first argument to the following.
 #=> 7500
 ```
 
+## Custom Operators
+
+You can customize an Elixir Operator like the following example:
+
+```elixir
+1 + 2 #=> 3
+defmodule WrongMath do
+  def a + b do
+    {a, b}
+  end
+end
+import WrongMath
+import Kernel, except: [+: 2]
+1 + 2 #=> {1, 2}
+```
+
 ## Bit Strings
 
 - `<<97::4>>` => short notation with 4 bits
@@ -670,6 +686,7 @@ first..last = 1..5
 
 [a: x] = [b: 9] #=> ** (MatchError)
 [a: x] = [a: 5]
+[{:a, x}] = [a: 5]
 
 %{a: x} = %{b: 5} #=> ** (MatchError)
 %{} = %{a: 5} # empty map matches any map
