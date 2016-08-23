@@ -30,7 +30,7 @@ In Elixir a method is usually described with its arity (number of arguments), su
 
 - `foo function return tuple` => the result of a `foo` function is usually `{:ok, result}` or `{:error, reason}`
 - `foo! function may raise an error` => the result of a `foo!` is not wrapped in a tuple and it may raises an exception
-- Errors are **not used** for controlling flow
+- Exceptions/Errors are **not used** for controlling flow
 - Elixir uses **fail fast** idea and the supervision trees to control process health and possible restart processes.
 
 ## Comments
@@ -946,6 +946,89 @@ When capturing you can use the function/operator with its arity.
 (&{:ok, [&1]}).(:foo) #=> {:ok, [:foo, :bar]}
 (&[&1, &2]).(:foo, :bar) #=> [:foo, :bar]
 (&[&1 | [&2]]).(:foo, :bar) #=> [:foo, :bar]
+```
+
+## Exceptions/Errors => raise/try/rescue
+
+**Exceptions/Errors** in Elixir are `Structs`.
+
+- `raise "oops" #=> ** (RuntimeError) oops` => raises error with message
+- `raise ArgumentError #=> ** (ArgumentError) argument error` => raises an error by module
+- `raise ArgumentError, message: "oops" #=> ** (ArgumentError) oops` => raises an error by module with message
+- `defexception` => define an exception
+- `try/rescue` => catches an error
+- `throw/try/catch` => can be used as circuit breaking, but should be avoided
+- `exit("my reason")` => exiting current process
+- `after` => ensures some resource is cleaned up even if an exception was raised
+
+```elixir
+defmodule MyError do
+  defexception message: "default message"
+end
+
+is_map %MyError{} #=> true
+Map.keys %MyError{} #=> [:__exception__, :__struct__, :message]
+
+raise MyError #=> ** (MyError) default message
+raise MyError, message: "custom message" #=> ** (MyError) custom message
+```
+
+You can rescue an error with:
+
+```elixir
+try do
+  raise "oops"
+rescue
+  e in RuntimeError -> e
+after
+  IO.puts "I can do some clean up here"
+end
+#=> %RuntimeError{message: "oops"}
+
+try do
+  raise "oops"
+rescue
+  RuntimeError -> "Error!"
+end
+#=> "Error!"
+```
+
+`throw/catch` sometime is used for circuit breaking, but you can usually use another better way:
+
+```elixir
+try do
+  Enum.each -50..50, fn(x) ->
+    if rem(x, 13) == 0, do: throw(x)
+  end
+  "Got nothing"
+catch
+  x -> "Got #{x}"
+end
+#=> "Got -39"
+
+Enum.find -50..50, &(rem(&1, 13) == 0)
+#=> -39
+```
+
+`exit` can be caught but this is rare in Elixir:
+
+```elixir
+try do
+  exit "I am exiting"
+catch
+  :exit, _ -> "not really"
+end
+#=> "not really"
+```
+
+You can ommit `try` inside functions and use `rescue`, `catch`, `after` directly:
+
+```elixir
+def without_even_trying do
+  raise "oops"
+after
+  IO.puts "cleaning up!"
+end
 ```
 
 ## IO
