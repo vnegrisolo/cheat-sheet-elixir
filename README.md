@@ -221,6 +221,94 @@ The return of a function will be passed as the first argument to the following.
 #=> 7500
 ```
 
+## Pattern Matching
+
+In Elixir `=` sign is not just an assign operator, but a **Match Operator**.
+
+This means that you assign variables from right side to the left based on patterns defined by the left one. If a pattern does not match a `MatchError` is raised.
+
+This powerful tool is also used to decompose complex objects like tuples, lists, etc into smaller ones:
+
+```elixir
+x = 1 #=> assign 1 to x
+2 = x #=> ** (MatchError)
+1 = x #=> match and does not assign anything
+
+<<0, 1, x>> = <<0, 1, 2, 3>> #=> ** (MatchError)
+<<0, 1, x::binary>> = <<0, 1, 2, 3>>
+<<0, 1>> <> <<x::binary>> = <<0, 1, 2, 3>>
+<<0, 1>> <> <<x, y>> = <<0, 1, 2, 3>>
+<<0, 1>> <> <<x>> <> <<y>> = <<0, 1, 2, 3>>
+
+"world" <> x = "hello" #=> ** (MatchError)
+"he" <> x = "hello"
+
+{x, y, z} = {1, 2} #=> ** (MatchError)
+{} = {1, 2} #=> ** (MatchError)
+{:a, :b} = {:b, :a} #=> ** (MatchError)
+{x, y} = {1, 2}
+
+first..last = 1..5
+
+[x, 4] = [:a, 5] #=> ** (MatchError)
+[] = [:a, 5] #=> ** (MatchError)
+[:a, :b] = [:b, :a] #=> ** (MatchError)
+[x, 4] = [:a, 4]
+
+[x | y] = [] #=> ** (MatchError)
+[x | y] = [1]
+[x | y] = [1, 2, 3]
+
+[a: x] = [b: 9] #=> ** (MatchError)
+[a: x] = [a: 5]
+[{:a, x}] = [a: 5]
+
+%{a: x} = %{b: 5} #=> ** (MatchError)
+%{} = %{a: 5} # empty map matches any map
+%{a: x, b: 5} = %{b: 5, a: 7, c: 9}
+
+defmodule User do
+  defstruct name: "John", age: 27
+end
+john = %User{age: 29}
+%User{name: name} = john
+name #=> "John"
+```
+
+So in other words:
+
+- non variables on the left side will be used to **restrict a pattern to match**
+- variables using the pin operator on the left side will have its value to be used to **restrict a pattern to match**
+- variables on the left side will be **assigned** with right side values
+
+So **variables** and **non variables** behave differently with the match operator.
+
+In order to assert an **empty map** you have to use a guard instead of pattern match, just like:
+
+```elixir
+(
+  fn m when map_size(m) == 0 ->
+    "empty map"
+  end
+).(%{}) #=> "empty map"
+```
+
+### Pin Operator
+
+The Pin Operator `^` is used to treat variables the same way non variables with the match operator. In other words, the Pin Operator will evaluate the variable and use its value to **restrict a pattern**, preserving its original value.
+
+```elixir
+x = 1 #=> assign 1 to x
+^x = 1 #=> match x value with right side 1
+^x = 2 #=> ** (MatchError)
+```
+
+### Match Operator Limitation
+
+You cannot make function calls on the left side of a match.
+
+- `length([1, [2], 3]) = 3 #=> ** (CompileError) illegal pattern`
+
 ## Custom Operators
 
 You can customize an Elixir Operator like the following example:
@@ -311,14 +399,9 @@ Tuple is a list that is stored contiguously in memory.
 
 - `put_elem({:ok, "hello"}, 1, "world")`
 
-## Ranges
-
-- `range = 1..10` => range definition
-- `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) #=> 6` => range used in a reduce function to sum them up
-- `Enum.count(range) #=> 10`
-- `Enum.member?(range, 11) #=> false`
-
 ## Lists
+
+**Lists** implements Enumerables protocol.
 
 List is a linked list structure where each element points to the next one in memory. When subtraction just the first ocurrence will be removed.
 
@@ -397,6 +480,8 @@ Keyword list is a list of tuples where first elements are atoms. When fetching b
 
 ## Maps
 
+**Maps** implements Enumerables protocol.
+
 Map holds a key value structure.
 
 - `%{name: "Mary", age: 29}` => map short notation (keys must be atoms)
@@ -441,6 +526,15 @@ is_map john #=> true
 john.__struct__ #=> User
 Map.keys(john) #=> [:__struct__, :age, :name]
 ```
+
+## Ranges
+
+Ranges are `Struct`.
+
+- `range = 1..10` => range definition
+- `Enum.reduce(1..3, 0, fn i, acc -> i + acc end) #=> 6` => range used in a reduce function to sum them up
+- `Enum.count(range) #=> 10`
+- `Enum.member?(range, 11) #=> false`
 
 ## Protocols
 
@@ -646,93 +740,58 @@ Enum.map([1, 2, 3], &(&1 * 2)) #=> [2, 4, 6]
 1..100 |> Stream.map(&(&1 * 3)) |> Enum.sum #=> 15150
 ```
 
-## Pattern Matching
+## Comprehension -> the for loop
 
-In Elixir `=` sign is not just an assign operator, but a **Match Operator**.
+`Comprehension` is a syntax sugar for the very powerful `for special form`. You can have **generators** and **filters** in that.
 
-This means that you assign variables from right side to the left based on patterns defined by the left one. If a pattern does not match a `MatchError` is raised.
+- `for` => `Comprehension`
+- `->` => **generators**
+- `:into` => change return to another `Collectable` type
 
-This powerful tool is also used to decompose complex objects like tuples, lists, etc into smaller ones:
+You can iterate over `Enumerable` what makes so close to a regular `for` loop on other languages:
 
 ```elixir
-x = 1 #=> assign 1 to x
-2 = x #=> ** (MatchError)
-1 = x #=> match and does not assign anything
+for n <- [1, 2, 3, 4], do: n * n
+[1, 4, 9, 16]
+```
 
-<<0, 1, x>> = <<0, 1, 2, 3>> #=> ** (MatchError)
-<<0, 1, x::binary>> = <<0, 1, 2, 3>>
-<<0, 1>> <> <<x::binary>> = <<0, 1, 2, 3>>
-<<0, 1>> <> <<x, y>> = <<0, 1, 2, 3>>
-<<0, 1>> <> <<x>> <> <<y>> = <<0, 1, 2, 3>>
+You can also iterate over multiple `Enumerable` and then create a combination between them:
 
-"world" <> x = "hello" #=> ** (MatchError)
-"he" <> x = "hello"
+```elixir
+for i <- [:a, :b, :c], j <- [1, 2], do:  {i, j}
+[a: 1, a: 2, b: 1, b: 2, c: 1, c: 2]
+```
 
-{x, y, z} = {1, 2} #=> ** (MatchError)
-{} = {1, 2} #=> ** (MatchError)
-{:a, :b} = {:b, :a} #=> ** (MatchError)
-{x, y} = {1, 2}
+You can pattern match each element:
 
-first..last = 1..5
+```elixir
+values = [good: 1, good: 2, bad: 3, good: 4]
+for {:good, n} <- values, do: n * n
+#=> [1, 4, 16]
+```
 
-[x, 4] = [:a, 5] #=> ** (MatchError)
-[] = [:a, 5] #=> ** (MatchError)
-[:a, :b] = [:b, :a] #=> ** (MatchError)
-[x, 4] = [:a, 4]
+Generators use `->` and they have on the right an `Enumerable` and on the left a **pattern matchable** element variable.
 
-[x | y] = [] #=> ** (MatchError)
-[x | y] = [1]
-[x | y] = [1, 2, 3]
+You can have **filters** to filter each element:
 
-[a: x] = [b: 9] #=> ** (MatchError)
-[a: x] = [a: 5]
-[{:a, x}] = [a: 5]
-
-%{a: x} = %{b: 5} #=> ** (MatchError)
-%{} = %{a: 5} # empty map matches any map
-%{a: x, b: 5} = %{b: 5, a: 7, c: 9}
-
-defmodule User do
-  defstruct name: "John", age: 27
+```elixir
+for dir  <- [".", "/"],
+    file <- File.ls!(dir),
+    path = Path.join(dir, file),
+    File.regular?(path) do
+  "dir=#{dir}, file=#{file}, path=#{path}"
 end
-john = %User{age: 29}
-%User{name: name} = john
-name #=> "John"
+#=> ["dir=., file=README.md, path=./README.md", "dir=/, file=.DS_Store, path=/.DS_Store"]
 ```
 
-So in other words:
-
-- non variables on the left side will be used to **restrict a pattern to match**
-- variables using the pin operator on the left side will have its value to be used to **restrict a pattern to match**
-- variables on the left side will be **assigned** with right side values
-
-So **variables** and **non variables** behave differently with the match operator.
-
-In order to assert an **empty map** you have to use a guard instead of pattern match, just like:
+You can use `:into` to change the return type:
 
 ```elixir
-(
-  fn m when map_size(m) == 0 ->
-    "empty map"
-  end
-).(%{}) #=> "empty map"
+for k <- [:foo, :bar], v <- 1..5, into: %{}, do: {k, v}
+#=> %{bar: 5, foo: 5}
+for k <- [:foo, :bar], v <- 1..5, into: [], do: {k, v}
+#=> [foo: 1, foo: 2, foo: 3, foo: 4, foo: 5, bar: 1, bar: 2, bar: 3, bar: 4, bar: 5]
 ```
-
-### Pin Operator
-
-The Pin Operator `^` is used to treat variables the same way non variables with the match operator. In other words, the Pin Operator will evaluate the variable and use its value to **restrict a pattern**, preserving its original value.
-
-```elixir
-x = 1 #=> assign 1 to x
-^x = 1 #=> match x value with right side 1
-^x = 2 #=> ** (MatchError)
-```
-
-### Match Operator Limitation
-
-You cannot make function calls on the left side of a match.
-
-- `length([1, [2], 3]) = 3 #=> ** (CompileError) illegal pattern`
 
 ## Anonymous Functions
 
