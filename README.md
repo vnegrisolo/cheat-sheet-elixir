@@ -326,6 +326,22 @@ import Kernel, except: [+: 2]
 1 + 2 #=> {1, 2}
 ```
 
+## Sigils
+
+Available delimiters for `Sigil`: `/`, `|`, `"`, `'`, `(`, `[`, `{`, `<`.
+
+- `~r` => regular expression (modifiers: `i`)
+- `~r/hello/i` => `i` modifies to case insensitive
+- `~w` => list of string words (modifiers: )
+- `~w[foo bar]c` => `c` modifies to list of char lists
+- `~w[foo bar]a` => `c` modifies to list of atoms
+
+```elixir
+~w(one two three) #=> ["one", "two", "three"]
+~w(one two three)c #=> ['one', 'two', 'three']
+~w(one two three)a #=> [:one, :two, :three]
+```
+
 ## Bit Strings
 
 - `<<97::4>>` => short notation with 4 bits
@@ -413,13 +429,6 @@ List is a linked list structure where each element points to the next one in mem
 - `hd([1, 5, 7])` => head
 - `tl([1, 5, 7])` => tail
 - `:foo in [:foo, :bar] #=> true` => in operator
-- `~w` => generates a list from words
-
-```elixir
-~w(one two three) #=> ["one", "two", "three"]
-~w(one two three)c #=> ['one', 'two', 'three']
-~w(one two three)a #=> [:one, :two, :three]
-```
 
 ### Performance for Lists:
 
