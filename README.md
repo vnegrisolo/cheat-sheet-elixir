@@ -26,6 +26,13 @@ In Elixir a method is usually described with its arity (number of arguments), su
 - `elixir <script_file>.exs` => run a script file
 - `elixirc <file>.ex` => compile a file to `Elixir.<File>.beam`
 
+## Elixir Conventions
+
+- `foo function return tuple` => the result of a `foo` function is usually `{:ok, result}` or `{:error, reason}`
+- `foo! function may raise an error` => the result of a `foo!` is not wrapped in a tuple and it may raises an exception
+- Errors are **not used** for controlling flow
+- Elixir uses **fail fast** idea and the supervision trees to control process health and possible restart processes.
+
 ## Comments
 
 - `#` => single line comment
