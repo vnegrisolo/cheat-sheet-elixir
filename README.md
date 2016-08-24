@@ -13,7 +13,7 @@ Elixir was designed to take all that advantages in a modern coding language.
 
 Elixir data types are immutable.
 
-In Elixir a method is usually described with its arity (number of arguments), such as: `is_boolean/1`.
+In Elixir a function is usually described with its arity (number of arguments), such as: `is_boolean/1`.
 
 ## File Types
 
@@ -41,8 +41,12 @@ There are no multi-line comment
 
 ## Code Documentation
 
-- `@moduledoc`
-- `@doc`
+- `@moduledoc` => module documentation
+- `@doc` => function documentation
+- `@spec` => function arguments/return specification
+- `@typedoc` => type documentation
+- `@type` => type definition
+- `@typep` => private type definition
 
 ```elixir
 defmodule Math do
@@ -55,6 +59,7 @@ defmodule Math do
       3
   """
 
+  @spec sum(number, number) :: number
   @doc """
   Calculates the sum of two numbers.
   """
@@ -95,9 +100,13 @@ h Math.sum
 - `iex` => open Interactive Elixir
 - `iex <file>` => open Interactive Elixir loading a file
 - `<Ctrl>c + a` => close iex
-- `h <method/arity>` => see help for a method
-- `h <operator/arity>` => see help for a operator
 - `i <object>` => information about an object
+- `h <function/arity>` => help for a function
+- `h <operator/arity>` => help for a operator
+- `s <function/arity>` => specification for a function
+- `s <operator/arity>` => specification for a operator
+- `t <function/arity>` => type for a function
+- `c <file>` => load and compile a `.ex` file
 
 ## Basic Types
 
@@ -946,6 +955,27 @@ When capturing you can use the function/operator with its arity.
 (&{:ok, [&1]}).(:foo) #=> {:ok, [:foo, :bar]}
 (&[&1, &2]).(:foo, :bar) #=> [:foo, :bar]
 (&[&1 | [&2]]).(:foo, :bar) #=> [:foo, :bar]
+```
+
+## Behaviours
+
+Behaviour modules defines functions
+
+- `@callback` => defines a function to be implemented by other modules
+- `::` => separates the function definition to its return type
+
+```elixir
+defmodule Parser do
+  @callback parse(String.t) :: any
+  @callback extensions() :: [String.t]
+end
+
+defmodule JSONParser do
+  @behaviour Parser
+
+  def parse(str), do: # ... parse JSON
+  def extensions, do: ["json"]
+end
 ```
 
 ## Exceptions/Errors => raise/try/rescue
