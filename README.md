@@ -1223,3 +1223,18 @@ quote do: 2 * 2 == 4
 #=>   ]
 #=> }
 ```
+
+## Erlang libraries
+
+Elixir provider some Erlang modules as atoms.
+
+- `:crypto` => crypto functions like `:crypto.hash/2`
+- `:io` => io functions like `:io.format/2`
+- `:digraph` => deal with digraphs
+- `:ets` => large data structure in memory
+- `:dets` => large data structure on disk
+- `:math` => math functions like `:math.pi/0`
+- `:queue` => first-in first-out structure
+- `:rand` => rand functions like `:rand.uniform/0`
+- `:zip` => handle zip files
+- `:zlib` => handle gzip files
