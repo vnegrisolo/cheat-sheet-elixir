@@ -857,6 +857,7 @@ calc.(4, 5) #=> 45
 - `when` => guards
 - `@` => module attributes
 - `__info__(:functions)` => list functions inside a module
+- `defdelegate` => delegate functions
 
 ```eilxir
 defmodule Math do
