@@ -647,6 +647,20 @@ users = put_in users[:john].age, 31
 users = update_in users[:mary].languages, &List.delete(&1, "Clojure")
 ```
 
+## Enums and Streams
+
+**Lists** and **Maps** are Enumerables.
+
+`Enum` module perform **eager** operations, meanwhile `Stream` module perform **lazy** operations.
+
+```elixir
+# eager Enum
+1..100 |> Enum.map(&(&1 * 3)) |> Enum.sum #=> 15150
+
+# lazy Stream
+1..100 |> Stream.map(&(&1 * 3)) |> Enum.sum #=> 15150
+```
+
 ## do/end Keyword List and Block Syntax
 
 In Elixir you can use either **Keyword List** syntax or  **do/end Block** syntax:
@@ -710,9 +724,28 @@ cond do: (
 )
 ```
 
+## The `with` macro
+
+- `with` => macro to combine multiple match clauses
+- `<-` => a matching clause, on the left
+- `=` => bare expression is allowed
+- `else` => if some matching clause fails
+
+```elixir
+opts = %{width: 10, height: 20}
+with {:ok, width} <- Map.fetch(opts, :width),
+     {:ok, height} <- Map.fetch(opts, :height) do
+  {:ok, width * height}
+else
+  :error ->
+    {:error, :wrong_data}
+end
+#=> {:ok, 200}
+```
+
 ## Recursion
 
-There is **no for loop** in Elixir, due to Elixir immutability. Instead you need to use **recursion**:
+There is traditional **no for loop** in Elixir, due to Elixir immutability There is a macro `for` that it's also called as `Comprehension` but it works differently from a traditional for loop. If you want a simple loop iteration you'll need to use **recursion**:
 
 ```elixir
 defmodule Logger do
@@ -759,20 +792,6 @@ Math.double([1, 2, 3]) #=> [2, 4, 6]
 Enum.map([1, 2, 3], &(&1 * 2)) #=> [2, 4, 6]
 ```
 
-## Enums and Streams
-
-**Lists** and **Maps** are Enumerables.
-
-`Enum` module perform **eager** operations, meanwhile `Stream` module perform **lazy** operations.
-
-```elixir
-# eager Enum
-1..100 |> Enum.map(&(&1 * 3)) |> Enum.sum #=> 15150
-
-# lazy Stream
-1..100 |> Stream.map(&(&1 * 3)) |> Enum.sum #=> 15150
-```
-
 ## Comprehension -> the for loop
 
 `Comprehension` is a syntax sugar for the very powerful `for special form`. You can have **generators** and **filters** in that.
@@ -785,14 +804,14 @@ You can iterate over `Enumerable` what makes so close to a regular `for` loop on
 
 ```elixir
 for n <- [1, 2, 3, 4], do: n * n
-[1, 4, 9, 16]
+#=> [1, 4, 9, 16]
 ```
 
 You can also iterate over multiple `Enumerable` and then create a combination between them:
 
 ```elixir
 for i <- [:a, :b, :c], j <- [1, 2], do:  {i, j}
-[a: 1, a: 2, b: 1, b: 2, c: 1, c: 2]
+#=> [a: 1, a: 2, b: 1, b: 2, c: 1, c: 2]
 ```
 
 You can pattern match each element:
