@@ -350,7 +350,7 @@ Available delimiters for `Sigil`: `/`, `|`, `"`, `'`, `(`, `[`, `{`, `<`.
 - `~r/hello/i` => `i` modifies to case insensitive
 - `~w` => list of string words (modifiers: )
 - `~w[foo bar]c` => `c` modifies to list of char lists
-- `~w[foo bar]a` => `c` modifies to list of atoms
+- `~w[foo bar]a` => `a` modifies to list of atoms
 
 ```elixir
 ~w(one two three) #=> ["one", "two", "three"]
